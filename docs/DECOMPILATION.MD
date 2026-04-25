@@ -68,7 +68,7 @@ $$Address_{Element} = Address_{Array} + (Index * Size_{Element})$$
 So if we had an array of integers `myArray`, the memory address of a given element `i` is calculated as:
 
 ```c
-myArray + (i * 4); // integers are 4 bytes in size
+myArray + (i * sizeof(int));
 ```
 
 Although this code will work, the C devs gave us a much more convenient way to do this:
@@ -86,10 +86,10 @@ G2Matrix segMatrix;
 G2Anim *anim;
 G2AnimController *controller;
 
-segMatrix = *(anim->segMatrices + (controller->segNumber * 32));
+segMatrix = *(anim->segMatrices + (controller->segNumber * 0x20));
 ```
 
-This looks like an array access. If we look in [TYPES.h](/include/Game/TYPES.h), we'll see that the size of a `G2Matrix` is 0x20 bytes (32 in decimal), confirming our findings.
+This looks like an array access. If we look in [TYPES.h](/include/Game/TYPES.h), we'll see that the size of a `G2Matrix` is 0x20 bytes, confirming our findings.
 
 So we can now rewrite this as:
 
