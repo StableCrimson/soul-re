@@ -393,6 +393,84 @@ int GlyphTime(int time)
 }
 ```
 
+### Load/Compare Optimizations
+
+When matching a function, you may find yourself stuck on a mismatch regarding what should be a fairly simple comparison. The sample below is a snippet from the actual project, though the remaining conditions of the `if` statement have been left out for the sake of this example:
+
+```c
+if (data->MorphTime == 0x3E8)
+{
+    RONINBSS_FadeMove(instance, 1);
+}
+else
+{
+    RONINBSS_FadeMove(instance, 0);
+}
+```
+
+Seems pretty straightforward, but the function doesn't match. If we look at the diff, we can notice the load instruction is wrong:
+
+```asm
+lw      v0,8(a0) # Original
+---
+lh      v1,8(a0) # Ours
+```
+
+The original assembly uses `lw` (**L**oad **W**ord), which loads a 32-bit word, which is a C `int`. But ours uses `lh` (**L**oad **H**alfword), which loads a 16-bit halfword, which is a C `short`.
+
+Let's look at the struct that this `MorphTime` field belongs to:
+
+```c
+// size: 0x20
+typedef struct _GameTrackerASMData_Type
+{
+    // offset: 0x0000
+    long drawBackFaces;
+    // offset: 0x0004
+    long dispPage;
+    // offset: 0x0008
+    short MorphTime;
+    // offset: 0x000A
+    short MorphType;
+    // offset: 0x000C (20 bytes)
+    LightInstance lightInstances[1];
+} GameTrackerASMData;
+```
+
+`MorphTime` is a short, it makes sense that the compiler would emit a `lh` for this field, so what's going on here? What's happening is a compiler optimization. If we look at the rest of this struct, we can see that there is another short immediately after: `MorphType`.
+
+When we load a halfword at `MorphTime`'s offset (8 bytes from the start of the struct), we load the short as expected. But when we load that via `lw`, we're grabbing a full 32-bit word or, effectively, two 16-bit halfwords. The compiler is loading **both** `MorphTime` _and_ `MorphType` as one value. The PSX is [little-endian](https://en.wikipedia.org/wiki/Endianness), so the stored integer value is loaded as:
+
+```asm
+0xYYYYXXXX
+```
+
+Where YYYY is the value of `MorphType` and XXXX is the value of `MorphTime`. Knowing this, let's look at the comparison again.
+
+We are checking if this combined value is 0x3E8, let's compare the two side by side:
+
+```asm
+0xYYYYXXXX
+0x000003E8
+```
+
+We can see that the `MorphTime` part of the value is 0x3E8, or 1000 in decimal. But the `MorphType` part of the value is just 0.
+
+So what's actually going on is:
+
+```c
+if (data->MorphTime == 1000 && data->MorphType == 0)
+{
+    RONINBSS_FadeMove(instance, 1);
+}
+else
+{
+    RONINBSS_FadeMove(instance, 0);
+}
+```
+
+Because the 2 shorts are right next to each other in the struct layout, and because they are _both_ being used in the comparison, the compiler optimized the two 16-bit loads and compares into a single 32-bit load and compare.
+
 ## Misc
 
 ### Resolving Stack Variables
