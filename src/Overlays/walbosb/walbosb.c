@@ -1,4 +1,6 @@
 #include "Overlays/walbosb/walbosb.h"
+#include "Game/GAMELOOP.h"
+#include "Game/INSTANCE.h"
 #include "Game/SOUND.h"
 #include "Game/MONSTER/MONAPI.h"
 #include "Game/MONSTER/MONLIB.h"
@@ -6,7 +8,19 @@
 // this conditional is for the objdiff report
 #ifndef SKIP_ASM
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_WalbossMessage);
+void WALBOSB_WalbossMessage(int message)
+{
+    Instance *inst; // not from debug symbols
+
+    for (inst = gameTrackerX.instanceList->first; inst != NULL; inst = inst->next)
+    {
+        if (INSTANCE_Query(inst, queryWhatAmI) == 0x10102)
+        {
+            INSTANCE_Post(inst, 0x01000017, message);
+            break;
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/Overlays/walbosb/walbosb", D_88000000);
 
@@ -166,7 +180,19 @@ INCLUDE_RODATA("asm/nonmatchings/Overlays/walbosb/walbosb", func_880006DC);
 
 #else 
 
-void WALBOSB_WalbossMessage(void) {};
+void WALBOSB_WalbossMessage(int message)
+{
+    Instance *inst; // not from debug symbols
+
+    for (inst = gameTrackerX.instanceList->first; inst != NULL; inst = inst->next)
+    {
+        if (INSTANCE_Query(inst, queryWhatAmI) == 0x10102)
+        {
+            INSTANCE_Post(inst, 0x01000017, message);
+            break;
+        }
+    }
+}
 
 void WALBOSB_AutofaceMarker(void) {};
 
