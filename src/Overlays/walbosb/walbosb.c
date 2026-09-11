@@ -1,6 +1,7 @@
 #include "Overlays/walbosb/walbosb.h"
 #include "Game/GAMELOOP.h"
 #include "Game/INSTANCE.h"
+#include "Game/MATH3D.h"
 #include "Game/OBTABLE.h"
 #include "Game/SOUND.h"
 #include "Game/MONSTER/MONAPI.h"
@@ -56,7 +57,55 @@ void WALBOSB_AutofaceMarker(Instance *instance)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_SetAutofacePos);
+void WALBOSB_SetAutofacePos(Instance *instance)
+{
+
+    HModel *model; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+    model = &instance->hModelList[instance->currentModel];
+
+    if (vars != NULL && vars->autofaceInst != NULL)
+    {
+
+        int i; // not from debug symbols
+        int dist; // not from debug symbols
+        int minDist; // not from debug symbols
+        HPrim *hPrim; // not from debug symbols
+
+        minDist = 999999;
+
+        for (i = model->numHPrims, hPrim = &model->hPrimList[0]; i != 0; i--, hPrim++)
+        {
+            if (hPrim->type == 1)
+            {
+
+                HSphere *hSphere; // not from debug symbols
+                hSphere = hPrim->data.hsphere;
+
+                if (hSphere->id == 8)
+                {
+
+                    Position pos;
+
+                    MON_SphereWorldPos(&instance->matrix[hPrim->segment], hSphere, &pos);
+                    dist = MATH3D_LengthXYZ(pos.x - gameTrackerX.playerInstance->position.x, pos.y - gameTrackerX.playerInstance->position.y, pos.z - gameTrackerX.playerInstance->position.z);
+
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        COPY_SVEC(Position, &vars->autofaceInst->position, Position, &pos);
+                    }
+                }
+            }
+        }
+
+        vars->autofaceInst->flags2 |= 0x20;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_ResetSetAutofacePos);
 
@@ -251,7 +300,55 @@ void WALBOSB_AutofaceMarker(Instance *instance)
     }
 }
 
-void WALBOSB_SetAutofacePos(void) {};
+void WALBOSB_SetAutofacePos(Instance *instance)
+{
+
+    HModel *model; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+    model = &instance->hModelList[instance->currentModel];
+
+    if (vars != NULL && vars->autofaceInst != NULL)
+    {
+
+        int i; // not from debug symbols
+        int dist; // not from debug symbols
+        int minDist; // not from debug symbols
+        HPrim *hPrim; // not from debug symbols
+
+        minDist = 999999;
+
+        for (i = model->numHPrims, hPrim = &model->hPrimList[0]; i != 0; i--, hPrim++)
+        {
+            if (hPrim->type == 1)
+            {
+
+                HSphere *hSphere; // not from debug symbols
+                hSphere = hPrim->data.hsphere;
+
+                if (hSphere->id == 8)
+                {
+
+                    Position pos;
+
+                    MON_SphereWorldPos(&instance->matrix[hPrim->segment], hSphere, &pos);
+                    dist = MATH3D_LengthXYZ(pos.x - gameTrackerX.playerInstance->position.x, pos.y - gameTrackerX.playerInstance->position.y, pos.z - gameTrackerX.playerInstance->position.z);
+
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        COPY_SVEC(Position, &vars->autofaceInst->position, Position, &pos);
+                    }
+                }
+            }
+        }
+
+        vars->autofaceInst->flags2 |= 0x20;
+    }
+}
 
 void WALBOSB_ResetSetAutofacePos(void) {};
 
