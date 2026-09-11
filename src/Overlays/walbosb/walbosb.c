@@ -1,6 +1,7 @@
 #include "Overlays/walbosb/walbosb.h"
 #include "Game/GAMELOOP.h"
 #include "Game/INSTANCE.h"
+#include "Game/OBTABLE.h"
 #include "Game/SOUND.h"
 #include "Game/MONSTER/MONAPI.h"
 #include "Game/MONSTER/MONLIB.h"
@@ -26,7 +27,34 @@ INCLUDE_RODATA("asm/nonmatchings/Overlays/walbosb/walbosb", D_88000000);
 
 INCLUDE_RODATA("asm/nonmatchings/Overlays/walbosb/walbosb", D_88000020);
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_AutofaceMarker);
+void WALBOSB_AutofaceMarker(Instance *instance)
+{
+
+    Instance *inst; // not from debug symbols
+    Object *object; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+
+    if (vars != NULL)
+    {
+        object = OBTABLE_FindObject("autoface");
+
+        if (object != NULL)
+        {
+            inst = INSTANCE_BirthObject(instance, object, 0);
+
+            if (inst != NULL)
+            {
+                inst->flags |= 0x800;
+                inst->flags2 &= ~0x20;
+                vars->autofaceInst = inst;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_SetAutofacePos);
 
@@ -194,7 +222,34 @@ void WALBOSB_WalbossMessage(int message)
     }
 }
 
-void WALBOSB_AutofaceMarker(void) {};
+void WALBOSB_AutofaceMarker(Instance *instance)
+{
+
+    Instance *inst; // not from debug symbols
+    Object *object; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+
+    if (vars != NULL)
+    {
+        object = OBTABLE_FindObject("autoface");
+
+        if (object != NULL)
+        {
+            inst = INSTANCE_BirthObject(instance, object, 0);
+
+            if (inst != NULL)
+            {
+                inst->flags |= 0x800;
+                inst->flags2 &= ~0x20;
+                vars->autofaceInst = inst;
+            }
+        }
+    }
+}
 
 void WALBOSB_SetAutofacePos(void) {};
 
