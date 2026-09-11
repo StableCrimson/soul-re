@@ -107,7 +107,22 @@ void WALBOSB_SetAutofacePos(Instance *instance)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_ResetSetAutofacePos);
+void WALBOSB_ResetSetAutofacePos(Instance *instance)
+{
+
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+
+    if (vars != NULL && vars->autofaceInst != NULL)
+    {
+        vars->autofaceInst->flags2 &= ~0x20;
+        COPY_SVEC(Position, &vars->autofaceInst->position, Position, &instance->position);
+    }
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_Collide);
 
@@ -350,7 +365,22 @@ void WALBOSB_SetAutofacePos(Instance *instance)
     }
 }
 
-void WALBOSB_ResetSetAutofacePos(void) {};
+void WALBOSB_ResetSetAutofacePos(Instance *instance)
+{
+
+    MonsterVars *mv; // not from debug symbols
+    WalbosbVars *vars; // not from debug symbols
+
+    mv = (MonsterVars *)instance->extraData;
+    vars = (WalbosbVars *)mv->extraVars;
+
+    if (vars != NULL && vars->autofaceInst != NULL)
+    {
+        vars->autofaceInst->flags2 &= ~0x20;
+        COPY_SVEC(Position, &vars->autofaceInst->position, Position, &instance->position);
+    }
+}
+
 
 void WALBOSB_Collide(void) {};
 
