@@ -124,7 +124,42 @@ void WALBOSB_ResetSetAutofacePos(Instance *instance)
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_Collide);
+void WALBOSB_Collide(Instance *instance, GameTracker *gameTracker)
+{
+
+    CollideInfo *collideInfo; // not from debug symbols
+    HSphere *hSphere; // not from debug symbols
+
+    collideInfo = (CollideInfo *)instance->collideInfo;
+    hSphere = (HSphere *)collideInfo->prim0;
+
+    if (collideInfo->type0 != 1 || hSphere->id != 9)
+    {
+        MonsterCollide(instance, gameTracker);
+    }
+    else
+    {
+
+        Instance *collideInst; // not from debug symbols
+        collideInst = (Instance *)collideInfo->inst1;
+
+        if (collideInst == NULL)
+        {
+            MonsterCollide(instance, gameTracker);
+        }
+        else
+        {
+
+            uintptr_t queryResult; // not from debug symbols
+            queryResult = INSTANCE_Query(collideInst, queryWhatAmI);
+
+            if (queryResult != 0x10102 && queryResult != 0x410002)
+            {
+                MonsterCollide(instance, gameTracker);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_Query);
 
@@ -382,7 +417,42 @@ void WALBOSB_ResetSetAutofacePos(Instance *instance)
 }
 
 
-void WALBOSB_Collide(void) {};
+void WALBOSB_Collide(Instance *instance, GameTracker *gameTracker)
+{
+
+    CollideInfo *collideInfo; // not from debug symbols
+    HSphere *hSphere; // not from debug symbols
+
+    collideInfo = (CollideInfo *)instance->collideInfo;
+    hSphere = (HSphere *)collideInfo->prim0;
+
+    if (collideInfo->type0 != 1 || hSphere->id != 9)
+    {
+        MonsterCollide(instance, gameTracker);
+    }
+    else
+    {
+
+        Instance *collideInst; // not from debug symbols
+        collideInst = (Instance *)collideInfo->inst1;
+
+        if (collideInst == NULL)
+        {
+            MonsterCollide(instance, gameTracker);
+        }
+        else
+        {
+
+            uintptr_t queryResult; // not from debug symbols
+            queryResult = INSTANCE_Query(collideInst, queryWhatAmI);
+
+            if (queryResult != 0x10102 && queryResult != 0x410002)
+            {
+                MonsterCollide(instance, gameTracker);
+            }
+        }
+    }
+}
 
 void WALBOSB_Query(void) {};
 
