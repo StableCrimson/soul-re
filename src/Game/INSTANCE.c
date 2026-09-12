@@ -1132,7 +1132,7 @@ void INSTANCE_ProcessFunctions(InstanceList *instanceList)
 
                                     if (temp->id != 0)
                                     {
-                                        SIGNAL_HandleSignal(instance, temp->data.introActive.gotoLabel, 0); // TODO: find the union from the Signal struct that would logically fit in here
+                                        SIGNAL_HandleSignal(instance, (Signal *)(temp->id + 8), 0); // TODO: find the union from the Signal struct that would logically fit in here
                                     }
                                 }
                             }
