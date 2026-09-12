@@ -1,11 +1,15 @@
 #include "Overlays/walbosb/walbosb.h"
+#include "Game/DEBUG.h"
 #include "Game/GAMELOOP.h"
+#include "Game/G2/ANMCTRLR.h"
 #include "Game/INSTANCE.h"
 #include "Game/MATH3D.h"
+#include "Game/MEMPACK.h"
 #include "Game/OBTABLE.h"
 #include "Game/SOUND.h"
 #include "Game/MONSTER/MONAPI.h"
 #include "Game/MONSTER/MONLIB.h"
+#include "Game/MONSTER/MONSTER.h"
 
 // this conditional is for the objdiff report
 #ifndef SKIP_ASM
@@ -257,7 +261,58 @@ void WALBOSB_Message(Instance *instance, unsigned long message, unsigned long da
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_Init);
+void WALBOSB_Init(Instance *instance)
+{
+
+    WalbosbVars *vars; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    MonsterAttributes *ma; // not from debug symbols
+
+    MON_DefaultInit(instance);
+
+    mv = (MonsterVars *)instance->extraData;
+
+    if (mv != NULL)
+    {
+        vars = (WalbosbVars *)MEMPACK_Malloc(sizeof(WalbosbVars), MEMORY_TYPE_WALBOSBDATA);
+
+        if (vars == NULL)
+        {
+            mv->extraVars = NULL;
+        }
+        else
+        {
+            mv->extraVars = vars;
+            vars->pitch = 0;
+            vars->tauntState = 0;
+            vars->abortedAttacks = 0;
+            WALBOSB_AutofaceMarker(instance);
+            WALBOSB_SetAutofacePos(instance);
+        }
+    }
+
+    G2Anim_AttachControllerToSeg(&instance->anim, 0, G2ANIM_CTRLRTYPE_ADD_LOCALROT);
+    G2Anim_EnableController(&instance->anim, 0, G2ANIM_CTRLRTYPE_ADD_LOCALROT);
+
+    instance->xVel = 0;
+    instance->yVel = 0;
+    instance->zVel = 0;
+
+    mv->mvFlags |= 0x800;
+
+    MON_SwitchState(instance, MONSTER_STATE_IDLE);
+
+    ma = (MonsterAttributes *)instance->data;
+    MON_PlayAnimFromList(instance, ma->auxAnimList, 0, 1);
+
+    mv->auxFlags |= 0x20000000;
+    mv->mvFlags |= 0x2000;
+    instance->collideFunc = WALBOSB_Collide;
+    mv->soulJuice = 0;
+    mv->targetFade = 0;
+
+    DEBUG_DoAreaProtection();
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_CleanUp);
 
@@ -558,7 +613,58 @@ void WALBOSB_Message(Instance *instance, unsigned long message, unsigned long da
     }
 }
 
-void WALBOSB_Init(void) {};
+void WALBOSB_Init(Instance *instance)
+{
+
+    WalbosbVars *vars; // not from debug symbols
+    MonsterVars *mv; // not from debug symbols
+    MonsterAttributes *ma; // not from debug symbols
+
+    MON_DefaultInit(instance);
+
+    mv = (MonsterVars *)instance->extraData;
+
+    if (mv != NULL)
+    {
+        vars = (WalbosbVars *)MEMPACK_Malloc(sizeof(WalbosbVars), MEMORY_TYPE_WALBOSBDATA);
+
+        if (vars == NULL)
+        {
+            mv->extraVars = NULL;
+        }
+        else
+        {
+            mv->extraVars = vars;
+            vars->pitch = 0;
+            vars->tauntState = 0;
+            vars->abortedAttacks = 0;
+            WALBOSB_AutofaceMarker(instance);
+            WALBOSB_SetAutofacePos(instance);
+        }
+    }
+
+    G2Anim_AttachControllerToSeg(&instance->anim, 0, G2ANIM_CTRLRTYPE_ADD_LOCALROT);
+    G2Anim_EnableController(&instance->anim, 0, G2ANIM_CTRLRTYPE_ADD_LOCALROT);
+
+    instance->xVel = 0;
+    instance->yVel = 0;
+    instance->zVel = 0;
+
+    mv->mvFlags |= 0x800;
+
+    MON_SwitchState(instance, MONSTER_STATE_IDLE);
+
+    ma = (MonsterAttributes *)instance->data;
+    MON_PlayAnimFromList(instance, ma->auxAnimList, 0, 1);
+
+    mv->auxFlags |= 0x20000000;
+    mv->mvFlags |= 0x2000;
+    instance->collideFunc = WALBOSB_Collide;
+    mv->soulJuice = 0;
+    mv->targetFade = 0;
+
+    DEBUG_DoAreaProtection();
+}
 
 void WALBOSB_CleanUp(void) {};
 
