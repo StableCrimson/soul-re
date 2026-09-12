@@ -161,7 +161,15 @@ void WALBOSB_Collide(Instance *instance, GameTracker *gameTracker)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/walbosb/walbosb", WALBOSB_Query);
+uintptr_t WALBOSB_Query(Instance *instance, unsigned long query)
+{
+    if (query != 0)
+    {
+        return MonsterQuery(instance, query);
+    }
+
+    return 0;
+}
 
 void WALBOSB_Message(Instance *instance, unsigned long message, unsigned long data)
 {
@@ -454,7 +462,15 @@ void WALBOSB_Collide(Instance *instance, GameTracker *gameTracker)
     }
 }
 
-void WALBOSB_Query(void) {};
+uintptr_t WALBOSB_Query(Instance *instance, unsigned long query)
+{
+    if (query != 0)
+    {
+        return MonsterQuery(instance, query);
+    }
+
+    return 0;
+}
 
 void WALBOSB_Message(Instance *instance, unsigned long message, unsigned long data)
 {
