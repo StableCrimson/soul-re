@@ -4,6 +4,10 @@
 #include "Game/MENU/MENUFACE.h"
 #include "Game/GAMELOOP.h" 
 
+// TODO: Where do these symbols come from? Where to we want to store these definitions?
+void _card_open(long);
+
+
 // this conditional is for the objdiff report
 #ifndef SKIP_ASM
 
@@ -12,7 +16,25 @@ int func_880003B4()
     return sizeof(mcpsx_t);
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_880003BC);
+void func_880003BC(mcpsx_t *mcpsx, void *opaque)
+{
+
+    memset(mcpsx, 0, sizeof(mcpsx_t));
+
+    PadStopCom();
+    _card_open(1);
+    PadStartCom();
+
+    mcpsx->state.mode = mode_initialized;
+    mcpsx->state.sync = sync_idle;
+    mcpsx->state.func = func_none;
+    mcpsx->state.err = mcpsx_err_busy;
+    mcpsx->state.observed = 0;
+    mcpsx->params.channel = 0;
+    mcpsx->params.offset = 0;
+    mcpsx->opaque = opaque;
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_88000438);
 
@@ -284,7 +306,25 @@ int func_880003B4()
     return sizeof(mcpsx_t);
 }
 
-void func_880003BC(void) {};
+void func_880003BC(mcpsx_t *mcpsx, void *opaque)
+{
+
+    memset(mcpsx, 0, sizeof(mcpsx_t));
+
+    PadStopCom();
+    _card_open(1);
+    PadStartCom();
+
+    mcpsx->state.mode = mode_initialized;
+    mcpsx->state.sync = sync_idle;
+    mcpsx->state.func = func_none;
+    mcpsx->state.err = mcpsx_err_busy;
+    mcpsx->state.observed = 0;
+    mcpsx->params.channel = 0;
+    mcpsx->params.offset = 0;
+    mcpsx->opaque = opaque;
+
+}
 
 void func_88000438(void) {};
 
