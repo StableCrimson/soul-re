@@ -4,9 +4,20 @@
 #include "Game/MENU/MENUFACE.h"
 #include "Game/GAMELOOP.h" 
 
-// TODO: Where do these symbols come from? Where to we want to store these definitions?
-void _card_open(long);
-void _card_close();
+// TODO: PsyQ library functions
+
+// NOTE: These funcs aren't part of the public API
+extern void _card_open(long);
+extern void _card_close();
+
+extern long MemCardExist(long chan);
+extern long MemCardAccept(long chan);
+extern long MemCardReadFile(long chan, char *file, unsigned long *adrs, long ofs, long bytes);
+extern long MemCardWriteFile(long chan, char *file, unsigned long *adrs, long ofs, long bytes);
+extern long MemCardCreateFile(long chan, char *file, long blocks);
+extern long MemCardFormat(long chan);
+extern long MemCardDeleteFile(long chan, char *file);
+extern long MemCardUnformat(long chan);
 
 
 // this conditional is for the objdiff report
@@ -51,38 +62,29 @@ void func_88000464(mcpsx_t *mcpsx)
     MemCardSync(0, &commands, &result);
 
     mcpsx->state.sync = sync_idle;
-
     mcpsx->state.func = func_none;
-
     mcpsx->state.err = mcpsx_err_busy;
 }
 
 void func_880004A8(mcpsx_t *mcpsx)
 {
     MemCardStart();
-
     func_88000464(mcpsx);
-
     mcpsx->state.mode = mode_running;
 }
 
 void func_880004DC(mcpsx_t *mcpsx)
 {
     func_88000464(mcpsx);
-
     MemCardStop();
-
     mcpsx->state.mode = mode_initialized;
 }
 
 void func_88000510(mcpsx_t *mcpsx, int err)
 {
     mcpsx->state.func = func_none;
-
     mcpsx->state.sync = sync_idle;
-
     mcpsx->state.err = err;
-
     mcpsx->state.observed = 0;
 }
 
@@ -337,13 +339,39 @@ void func_88000438(mcpsx_t *mcpsx)
     mcpsx->state.mode = mode_terminated;
 }
 
-void func_88000464(mcpsx_t *mcpsx) {};
+void func_88000464(mcpsx_t *mcpsx)
+{
+    long commands;
+    long result;
 
-void func_880004A8(mcpsx_t *mcpsx) {};
+    MemCardSync(0, &commands, &result);
 
-void func_880004DC(mcpsx_t *mcpsx) {};
+    mcpsx->state.sync = sync_idle;
+    mcpsx->state.func = func_none;
+    mcpsx->state.err = mcpsx_err_busy;
+}
 
-void func_88000510(mcpsx_t *mcpsx, int err) {};
+void func_880004A8(mcpsx_t *mcpsx)
+{
+    MemCardStart();
+    func_88000464(mcpsx);
+    mcpsx->state.mode = mode_running;
+}
+
+void func_880004DC(mcpsx_t *mcpsx)
+{
+    func_88000464(mcpsx);
+    MemCardStop();
+    mcpsx->state.mode = mode_initialized;
+}
+
+void func_88000510(mcpsx_t *mcpsx, int err)
+{
+    mcpsx->state.func = func_none;
+    mcpsx->state.sync = sync_idle;
+    mcpsx->state.err = err;
+    mcpsx->state.observed = 0;
+}
 
 void func_88000528(void) {};
 
