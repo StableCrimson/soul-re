@@ -6,6 +6,7 @@
 
 // TODO: Where do these symbols come from? Where to we want to store these definitions?
 void _card_open(long);
+void _card_close();
 
 
 // this conditional is for the objdiff report
@@ -36,7 +37,11 @@ void func_880003BC(mcpsx_t *mcpsx, void *opaque)
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_88000438);
+void func_88000438(mcpsx_t *mcpsx)
+{
+    _card_close();
+    mcpsx->state.mode = mode_terminated;
+}
 
 void func_88000464(mcpsx_t *mcpsx)
 {
@@ -326,7 +331,11 @@ void func_880003BC(mcpsx_t *mcpsx, void *opaque)
 
 }
 
-void func_88000438(void) {};
+void func_88000438(mcpsx_t *mcpsx)
+{
+    _card_close();
+    mcpsx->state.mode = mode_terminated;
+}
 
 void func_88000464(mcpsx_t *mcpsx) {};
 
