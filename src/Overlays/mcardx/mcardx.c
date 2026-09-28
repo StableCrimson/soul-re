@@ -4,12 +4,16 @@
 #include "Game/MENU/MENUFACE.h"
 #include "Game/GAMELOOP.h" 
 
-// TODO: PsyQ library functions
 
-// NOTE: These funcs aren't part of the public API
-extern void _card_open(long);
-extern void _card_close();
+// ---- PsyQ library symbols ----
 
+#define	McErrNone		(0)
+#define	McErrCardNotExist	(1)
+#define	McErrCardInvalid	(2)
+
+// TODO: Remove once PsyQ inclusion has been updated
+extern void _card_open(long); // Not part of the public API
+extern void _card_close();   // Not part of the public API
 extern long MemCardExist(long chan);
 extern long MemCardAccept(long chan);
 extern long MemCardReadFile(long chan, char *file, unsigned long *adrs, long ofs, long bytes);
@@ -18,6 +22,7 @@ extern long MemCardCreateFile(long chan, char *file, long blocks);
 extern long MemCardFormat(long chan);
 extern long MemCardDeleteFile(long chan, char *file);
 extern long MemCardUnformat(long chan);
+extern long MemCardGetDirentry(long chan, char *name, struct DIRENTRY *dir, long *files, long ofs, long max);
 
 
 // this conditional is for the objdiff report
@@ -145,7 +150,39 @@ INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_880009F0);
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_88000A30);
 
-INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_88000A90);
+long func_88000A90(long channel, mcpsx_directory_t *directory, long *nfilesptr)
+{
+
+    struct DIRENTRY dirEntries[15];
+    int result;
+    int i;
+    struct DIRENTRY *currentDirEntry;
+    mcpsx_directory_t *currentDirectory;
+
+    result = MemCardGetDirentry(channel, "*", dirEntries, nfilesptr, 0, 15);
+
+    if (result == McErrNone)
+    {
+
+        i = 0;
+
+        if (result < *nfilesptr)
+        {
+
+            currentDirectory = directory;
+            currentDirEntry = dirEntries;
+
+            for (; i < *nfilesptr; currentDirEntry++, i++, currentDirectory++)
+            {
+                memcpy(currentDirectory->name, currentDirEntry->name, sizeof(currentDirectory->name));
+                currentDirectory->nbytes = currentDirEntry->size;
+            }
+        }
+    }
+
+    return result;
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/Overlays/mcardx/mcardx", func_88000B58);
 
@@ -423,7 +460,39 @@ void func_880009F0(void) {};
 
 void func_88000A30(void) {};
 
-void func_88000A90(void) {};
+long func_88000A90(long channel, mcpsx_directory_t *directory, long *nfilesptr)
+{
+
+    struct DIRENTRY dirEntries[15];
+    int result;
+    int i;
+    struct DIRENTRY *currentDirEntry;
+    mcpsx_directory_t *currentDirectory;
+
+    result = MemCardGetDirentry(channel, "*", dirEntries, nfilesptr, 0, 15);
+
+    if (result == McErrNone)
+    {
+
+        i = 0;
+
+        if (result < *nfilesptr)
+        {
+
+            currentDirectory = directory;
+            currentDirEntry = dirEntries;
+
+            for (; i < *nfilesptr; currentDirEntry++, i++, currentDirectory++)
+            {
+                memcpy(currentDirectory->name, currentDirEntry->name, sizeof(currentDirectory->name));
+                currentDirectory->nbytes = currentDirEntry->size;
+            }
+        }
+    }
+
+    return result;
+
+}
 
 void func_88000B58(void) {};
 
