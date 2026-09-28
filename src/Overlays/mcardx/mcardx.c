@@ -80,7 +80,7 @@ void func_880004DC(mcpsx_t *mcpsx)
     mcpsx->state.mode = mode_initialized;
 }
 
-void func_88000510(mcpsx_t *mcpsx, int err)
+void func_88000510(mcpsx_t *mcpsx, mcpsx_err_t err)
 {
     mcpsx->state.func = func_none;
     mcpsx->state.sync = sync_idle;
@@ -371,7 +371,7 @@ void func_880004DC(mcpsx_t *mcpsx)
     mcpsx->state.mode = mode_initialized;
 }
 
-void func_88000510(mcpsx_t *mcpsx, int err)
+void func_88000510(mcpsx_t *mcpsx, mcpsx_err_t err)
 {
     mcpsx->state.func = func_none;
     mcpsx->state.sync = sync_idle;
