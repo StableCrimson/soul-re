@@ -80,7 +80,8 @@ segments:
       - [0x002C8C, .rodata, Game/MCARD/MEMCARD]
       - [0x002CAC, .rodata, Game/MCARD/MCASSERT]
       - [0x002CD4, rodata, lib/libetc/intr]
-      - [0x002D44, rodata, lib/LIBS]
+      - [0x002D44, rodata, lib/libgpu/sys]
+      - [0x002F64, rodata, lib/LIBS]
 
       - [0x003554, _c, Game/PLAYER]
       - [0x0036B8, _c, Game/DEBUG]
@@ -171,8 +172,9 @@ segments:
       - [0x0A9D9C, _c, Game/MCARD/MEMCARD]
       - [0x0AA238, _c, Game/MCARD/MCASSERT]
       - [0x0AA27C, asm, lib/libetc/intr]
-      - [0xAA8F4, asm, lib/libc2/strncmp]
-      - [0xAA974, asm, lib/LIBS]
+      - [0x0AA8F4, asm, lib/libc2/strncmp]
+      - [0x0AA974, asm, lib/libgpu/sys]
+      - [0x0AD068, asm, lib/LIBS]
 
       - [0x0B8890, .data, Game/DEBUG]
       - [0x0BA7C0, .data, Game/FONT]
@@ -197,7 +199,8 @@ segments:
       - [0x0BD07C, .data, Game/MENU/MENUUTIL]
       - [0x0BD0AC, .data, Game/MENU/MENUDEFS]
       - [0x0BD0BC, data, lib/libetc/intr]
-      - [0x0BE1BC, data, lib/LIBS]
+      - [0x0BE1BC, data, lib/libgpu/sys]
+      - [0x0BE36C, data, lib/LIBS]
 
       - [0x0BFD9C, .sdata, Game/DEBUG]
       - [0x0C0BA0, .sdata, Game/CAMERA]
