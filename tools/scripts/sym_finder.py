@@ -69,7 +69,6 @@ def main():
         print(f"{args.lib_path} does is not a folder!")
         sys.exit(1)
 
-    # libs = find_library_with_funcs(args.lib_path, args.targets)
     files = collect_objs(Path(args.lib_path))
 
     if len(files) == 0:
