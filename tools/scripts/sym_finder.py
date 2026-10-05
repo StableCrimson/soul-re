@@ -22,7 +22,7 @@ def collect_objs(dir: Path) -> list[Path]:
     return files
 
 
-def symbol_defined_in_obj(obj_path: Path, target_symbol: str) -> bool:
+def symbols_defined_in_obj(obj_path: Path, target_symbols: list[str]) -> list[str]:
 
     lines = (
         subprocess.run(
@@ -35,13 +35,15 @@ def symbol_defined_in_obj(obj_path: Path, target_symbol: str) -> bool:
         .splitlines()[3:]
     )  # Discard info lines, only want the symbols
 
+    found_syms = []
+
     for line in lines:
         *_base_addr_and_flags, section, _size, symbol = line.strip().split()
 
-        if section != "*UND*" and symbol == target_symbol:
-            return True
+        if section != "*UND*" and symbol in target_symbols:
+            found_syms.append(symbol)
 
-    return False
+    return found_syms
 
 
 def main():
@@ -76,9 +78,8 @@ def main():
         return
 
     for file in files:
-        for entry in args.targets:
-            if symbol_defined_in_obj(file, entry):
-                print(f"Symbol '{entry}' found in {file}")
+        for found_sym in symbols_defined_in_obj(file, args.targets):
+            print(f"Symbol '{found_sym}' found in {file}")
 
 
 if __name__ == "__main__":
