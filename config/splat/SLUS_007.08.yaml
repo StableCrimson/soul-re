@@ -193,7 +193,11 @@ segments:
       - [0x0AD870, asm, lib/libc2/strcpy]
       - [0x0AD8C0, asm, lib/libgte/mtx_004]
       - [0x0ADA20, asm, lib/libgte/fgo_00]
-      - [0x0ADA60, asm, lib/LIBS]
+      - [0x0ADA60, asm, lib/libgte/smp_04]
+      - [0x0ADA90, asm, lib/libgpu/p17]
+      - [0x0ADAB0, asm, lib/libc2/strlen]
+      - [0x0ADAF0, asm, lib/libgte/reg11]
+      - [0x0ADB10, asm, lib/LIBS]
 
       - [0x0B8890, .data, Game/DEBUG]
       - [0x0BA7C0, .data, Game/FONT]
