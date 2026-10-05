@@ -75,17 +75,9 @@ def main():
         print("Not found")
         return
 
-    resolved = []
-
     for file in files:
-        worklist = set(args.targets) - set(resolved)
-
-        if len(worklist) == 0:
-            break
-
-        for entry in worklist:
+        for entry in args.targets:
             if symbol_defined_in_obj(file, entry):
-                resolved.append(entry)
                 print(f"Symbol '{entry}' found in {file}")
 
 
