@@ -56,6 +56,13 @@ def main():
     parser.add_argument(
         "targets", nargs="+", help="Space-separated list of symbol names to find"
     )
+    parser.add_argument(
+        "--obj-info",
+        default=False,
+        action="store_true",
+        required=False,
+        help="When set, print out the headers and symbols of the found object(s)",
+    )
 
     args = parser.parse_args()
 
@@ -72,10 +79,23 @@ def main():
         sys.exit(1)
 
     files = collect_objs(Path(args.lib_path))
+    objs = set()
 
     for file in files:
         for found_sym in symbols_defined_in_obj(file, args.targets):
             print(f"Symbol '{found_sym}' found in {file}")
+            objs.add(file)
+
+    if args.obj_info:
+        for obj in objs:
+            print(
+                subprocess.run(
+                    ["mips-linux-gnu-objdump", "-ht", obj.absolute()],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                ).stdout
+            )
 
 
 if __name__ == "__main__":
