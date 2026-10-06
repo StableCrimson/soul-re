@@ -73,10 +73,6 @@ def main():
 
     files = collect_objs(Path(args.lib_path))
 
-    if len(files) == 0:
-        print("Not found")
-        return
-
     for file in files:
         for found_sym in symbols_defined_in_obj(file, args.targets):
             print(f"Symbol '{found_sym}' found in {file}")
