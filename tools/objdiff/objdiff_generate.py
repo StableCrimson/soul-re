@@ -59,23 +59,28 @@ def _create_config():
             raise exc
 
 
+def _glob_matches_recursive(path: Path, glob: str) -> bool:
+
+    if glob.endswith("/**") and not glob.startswith("**/"):
+        while glob.endswith("/**"):
+            glob = glob[:-3]
+
+        trimmed_glob = Path(glob)
+
+        return path == trimmed_glob or trimmed_glob in path.parents
+
+    return path.match(glob)
+
+
 def _collect_objects(path: Path, config) -> list[Path]:
-    excluded_files = config["excluded_files"]
-    excluded_folders = config.get("excluded_folders", [])
-    excluded_suffixes = config.get("excluded_suffixes", [])
+    excluded = config.get("exclude", [])
 
     objs = []
 
     for file in path.rglob("*.o"):
-        if file.name.endswith(tuple(excluded_suffixes)):
-            continue
-
-        if any(excluded in file.name for excluded in excluded_files):
-            continue
-
         if any(
-            excluded in file.relative_to(path).parts[:-1]
-            for excluded in excluded_folders
+            _glob_matches_recursive(file.relative_to(path), exclusion)
+            for exclusion in excluded
         ):
             continue
 

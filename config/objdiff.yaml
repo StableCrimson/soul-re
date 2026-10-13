@@ -56,18 +56,15 @@ expected_paths:
   asm: expected/asm
   src: expected/src
 
-excluded_files:
-  - LIBS
-  - header
-
-excluded_folders:
-  - lib
-
-excluded_suffixes:
-  - .data.s.o
-  - .rodata.s.o
-  - .sdata.s.o
-  - .bss.s.o
-  - .comm.s.o
+exclude:
+  - "lib/**"
+  - "**/header.s.o"
+  - "*.data.s.o"
+  - "*.rodata.s.o"
+  - "*.sdata.s.o"
+  - "*.bss.s.o"
+  - "*.comm.s.o"
+  - "**/LIBS.s.o"
+  - "header.s.o"
 
 output: ./objdiff.json
